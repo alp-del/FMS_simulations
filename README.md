@@ -2,6 +2,8 @@
 
 
 1. **PSGD**: Low Dimensional Trajectory Hypothesis is True: DNNs can be Trained in Tiny Subspaces (TPAMI 2022)
+2. **FMS**
+3. **TME**
 
 
 ## Requirements
