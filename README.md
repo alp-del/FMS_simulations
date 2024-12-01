@@ -2,8 +2,7 @@
 
 
 1. **PSGD**: Low Dimensional Trajectory Hypothesis is True: DNNs can be Trained in Tiny Subspaces (TPAMI 2022)
-2. **RPSGD**: TME
-3. **FPSGD**: FMS
+
 
 ## Requirements
 
@@ -43,9 +42,19 @@ for n in "${n_values[@]}"
 do
     CUDA_VISIBLE_DEVICES=0 python3 -u train_psgd.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
 
-    CUDA_VISIBLE_DEVICES=0 python3 -u train_rpsgd.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_SPCA.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
 
-    CUDA_VISIBLE_DEVICES=0 python3 -u train_fpsgd.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_fms.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
+
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_fms2.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
+
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_tme.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
+
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_STE.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
+
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_SFMS.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
+
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_SFMS2.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
 done
 ```
 
@@ -65,10 +74,20 @@ model="resnet32"
 n_values=(3 5 6 9 12 15 20 25)
 for n in "${n_values[@]}"
 do
-    CUDA_VISIBLE_DEVICES=0 python3 -u train_psgd.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise$c\_$model |& tee -a log_${model}_n${n}
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_psgd.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
 
-    CUDA_VISIBLE_DEVICES=0 python3 -u train_rpsgd.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise$c\_$model |& tee -a log_${model}_n${n}
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_SPCA.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
 
-    CUDA_VISIBLE_DEVICES=0 python3 -u train_fpsgd.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise$c\_$model |& tee -a log_${model}_n${n}
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_fms.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
+
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_fms2.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
+
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_tme.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
+
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_STE.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
+
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_SFMS.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
+
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_SFMS2.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
 done
 ```
