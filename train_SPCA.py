@@ -13,6 +13,7 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 
 from sklearn.decomposition import PCA
+from sklearn.decomposition import TruncatedSVD
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import linalg as LA
@@ -149,14 +150,19 @@ def main():
         model.load_state_dict(torch.load(os.path.join(args.save_dir,  str(i) +  '.pt')))
         W.append(get_model_param_vec(model))
     W = np.array(W)
+    W = W-W.mean(axis=1,keepdims=True)
     W = W/(np.linalg.norm(W,axis=1, keepdims=True))
     print ('W:', W.shape)
+    n_components = args.n_components
+    svd = TruncatedSVD(n_components) 
+    svd.fit_transform(W)
+    P = svd.components_
 
     # Obtain base variables through PCA
-    pca = PCA(n_components=args.n_components)
-    pca.fit_transform(W)
-    P = np.array(pca.components_)
-    print ('ratio:', pca.explained_variance_ratio_)
+    #pca = PCA(n_components=args.n_components)
+    #pca.fit_transform(W)
+    #P = np.array(pca.components_)
+    #print ('ratio:', pca.explained_variance_ratio_)
     print ('P:', P.shape)
     print(P.dtype)
 
