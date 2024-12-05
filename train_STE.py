@@ -12,7 +12,7 @@ import torch.utils.data
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA,TruncatedSVD
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import linalg as LA
@@ -188,20 +188,25 @@ def main():
 
     V = np.dot(W,W.T)
     W_hat = sqrtm(V)
-    U,S,Vh = np.linalg.svd(W_hat,full_matrices=True)
+    #U,S,Vh = np.linalg.svd(W_hat,full_matrices=True)
     #print("Singular value of W_hat:",S)
     dd = args.n_components
     Cov = STE(W_hat,dd)
 
-    U,S,Vh = np.linalg.svd(Cov,full_matrices=True)
+    
+    svd = TruncatedSVD(dd) 
+    svd.fit_transform(Cov)
+    U = svd.components_
+
+    #U,S,Vh = np.linalg.svd(Cov,full_matrices=True)
     #print("Singular value of Cov:",S)
     
 
 
     # Obtain base variables through PCA
-    pca = PCA(n_components=args.n_components)
-    pca.fit_transform(Cov)
-    U = np.array(pca.components_)
+    #pca = PCA(n_components=args.n_components)
+    #pca.fit_transform(Cov)
+    #U = np.array(pca.components_)
     print('U:',U.shape)
     P =  (W.T) @ LA.inv(W_hat) @ (U.T)
     
