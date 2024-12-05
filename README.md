@@ -50,7 +50,7 @@ do
 
     CUDA_VISIBLE_DEVICES=0 python3 -u train_fms2.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
 
-    CUDA_VISIBLE_DEVICES=0 python3 -u train_tme.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_TME.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
 
     CUDA_VISIBLE_DEVICES=0 python3 -u train_STE.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
 
@@ -84,7 +84,7 @@ do
 
     CUDA_VISIBLE_DEVICES=0 python3 -u train_fms2.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
 
-    CUDA_VISIBLE_DEVICES=0 python3 -u train_tme.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
+    CUDA_VISIBLE_DEVICES=0 python3 -u train_TME.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
 
     CUDA_VISIBLE_DEVICES=0 python3 -u train_STE.py --epochs 40 --datasets $datasets --lr 1 --corrupt $c --params_start 0 --params_end 81 --batch-size 128 --n_components $n --arch=$model --save-dir=save_labelnoise${c}_${model} |& tee -a log_${model}_n${n}
 
