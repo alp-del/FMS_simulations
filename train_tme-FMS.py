@@ -12,10 +12,12 @@ import torch.utils.data
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 
-from sklearn.decomposition import PCA,TruncatedSVD
+from sklearn.decomposition import PCA
+from numpy.linalg import svd
+from scipy.linalg import subspace_angles
+from scipy.linalg import sqrtm
 import numpy as np
 from numpy import linalg as LA
-from scipy.linalg import sqrtm
 import pickle
 import random
 import resnet
@@ -29,7 +31,7 @@ def set_seed(seed=999):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-print ('rTME(0.001)')
+print ('FMS with TME initial')
 
 parser = argparse.ArgumentParser(description='P(+)-SGD in pytorch')
 parser.add_argument('--arch', '-a', metavar='ARCH', default='resnet32',
@@ -127,6 +129,41 @@ def update_param(model, param_vec):
         idx += size
 
 
+def FMS(X, dd,Cov):
+    D, N = X.shape
+
+    # Initial iteration count
+    iter = 1
+
+    # Perform SVD and initialize L
+    U, _, _ = svd(Cov, full_matrices=False)
+    L = U[:, :dd]
+
+    # Set initial angle and tolerance
+    ang = 1
+
+    # Iterate until convergence or max iteration count
+    while ang > 1e-12 and iter < 1000:
+        Lold = L
+
+        # Compute the residual projection
+        temp = (np.eye(D) - L @ L.T) @ X
+        w = np.sqrt(np.sum(temp**2, axis=0)) + 1e-10
+        
+
+        # Reweight and update XX
+        XX = X @ np.diag(1.0 / w) @ X.T
+
+        # Perform SVD again on the weighted matrix XX
+        U, _, _ = svd(XX, full_matrices=False)
+        L = U[:, :dd]
+
+        # Compute the angle between new and old subspace
+        ang = np.linalg.norm(subspace_angles(L, Lold))
+
+        iter += 1
+
+    return L
 
 def m_estimator(X):
     N, D = X.shape
@@ -134,24 +171,21 @@ def m_estimator(X):
     oldcov = initcov - 1
     cov = initcov
     iter_count = 1
-    eps = 1e-16  
-    lambda_reg = 0.001
+    eps = 1e-10  
+
     while np.linalg.norm(oldcov - cov, 'fro') > 1e-12 and iter_count < 1000:
         temp = X @ np.linalg.inv(cov + eps * np.eye(D))  
         d = np.sum(temp * np.conjugate(X), axis=1)  
         oldcov = cov
 
-        
+       
         temp = (np.real(d) + eps * np.ones(N))**(-1)  
  
-        cov = ((X.T * temp) @ X / N * D + lambda_reg * np.eye(D)) / (1 + lambda_reg) 
-        cov = cov / np.trace(cov) 
-        iter_count += 1   
+        cov = (X.T * temp) @ X / (N * D) 
+        cov = cov / np.trace(cov)  
+        iter_count += 1  
 
     return cov
-
-
-
 
 def main():
 
@@ -175,49 +209,26 @@ def main():
 
         model.load_state_dict(torch.load(os.path.join(args.save_dir,  str(i) +  '.pt')))
         W.append(get_model_param_vec(model))
-    
     W = np.array(W)
     print ('W:', W.shape)
 
-    V = np.dot(W,W.T)
-    W_hat = sqrtm(V)
-    #U,S,Vh = np.linalg.svd(W_hat,full_matrices=True)
-    #print("Singular value of W_hat:",S)
-    
-    Cov = m_estimator(W_hat)
-
-    #U,S,Vh = np.linalg.svd(Cov,full_matrices=True)
-    #print("Singular value of Cov:",S)
-    n_components = args.n_components
-    svd = TruncatedSVD(n_components) 
-    svd.fit_transform(Cov)
-    U = svd.components_
-
-
-
     # Obtain base variables through PCA
     #pca = PCA(n_components=args.n_components)
-    #pca.fit_transform(Cov)
-    #U = np.array(pca.components_)
-    print('U:',U.shape)
-    P =  (W.T) @ LA.inv(W_hat) @ (U.T)
+    #pca.fit_transform(W)
+    #P = np.array(pca.components_)
+    #print ('ratio:', pca.explained_variance_ratio_)
+    V = np.dot(W,W.T)
+    
+    W_hat = sqrtm(V)
+    Cov = m_estimator(W_hat)
+    n_components = args.n_components
+    U= FMS(W_hat,n_components,Cov)
+    
+    P =  (W.T) @ LA.inv(W_hat) @ (U)
     
     print ('P:', P.shape)
     P = P.T
     P = P.astype(np.float32)
-
-    #pca2 = PCA(n_components=args.n_components)
-    #pca2.fit_transform(W)
-    #P2 = np.array(pca2.components_)
-
-    #U,S,Vh = np.linalg.svd(P@P.T,full_matrices=True)
-    #print("Singular value of P:",S)
-
-    #U,S,Vh = np.linalg.svd(P2@P2.T,full_matrices=True)
-    #print("Singular value of P2:",S)
-
-    #U,S,Vh = np.linalg.svd(P@P2.T,full_matrices=True)
-    #print(S)
 
     P = torch.from_numpy(P).cuda()
 
@@ -268,7 +279,7 @@ def main():
     print ('last acc:', prec1)
 
     # torch.save(model.state_dict(), 'PBFGS.pt',_use_new_zipfile_serialization=False)  
-    torch.save(model.state_dict(), 'RPSGD.pt')  
+    torch.save(model.state_dict(), 'PSGD.pt')  
 
 running_grad = 0
 

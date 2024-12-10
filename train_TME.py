@@ -13,7 +13,6 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 
 from sklearn.decomposition import PCA,TruncatedSVD
-import matplotlib.pyplot as plt
 import numpy as np
 from numpy import linalg as LA
 from scipy.linalg import sqrtm
@@ -145,7 +144,7 @@ def m_estimator(X):
        
         temp = (np.real(d) + eps * np.ones(N))**(-1)  
  
-        cov = (X.T * temp) @ X / (N * D) 
+        cov = (X.T * temp) @ X / N * D
         cov = cov / np.trace(cov)  
         iter_count += 1  
 

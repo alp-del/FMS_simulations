@@ -14,7 +14,6 @@ import torchvision.datasets as datasets
 
 from sklearn.decomposition import PCA
 from sklearn.decomposition import TruncatedSVD
-import matplotlib.pyplot as plt
 import numpy as np
 from numpy import linalg as LA
 import pickle

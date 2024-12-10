@@ -29,7 +29,7 @@ def set_seed(seed=999):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-print ('rTME(0.001)')
+print ('rTME(0.01)')
 
 parser = argparse.ArgumentParser(description='P(+)-SGD in pytorch')
 parser.add_argument('--arch', '-a', metavar='ARCH', default='resnet32',
@@ -135,7 +135,7 @@ def m_estimator(X):
     cov = initcov
     iter_count = 1
     eps = 1e-16  
-    lambda_reg = 0.001
+    lambda_reg = 0.01
     while np.linalg.norm(oldcov - cov, 'fro') > 1e-12 and iter_count < 1000:
         temp = X @ np.linalg.inv(cov + eps * np.eye(D))  
         d = np.sum(temp * np.conjugate(X), axis=1)  
