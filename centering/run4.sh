@@ -35,7 +35,7 @@ do
         do
             echo "Running $method with n_components=${n} and c=${c}..."
             CUDA_VISIBLE_DEVICES=0 python3 -u train_${method}.py \
-                --epochs 40 --datasets $datasets --lr 0.01 --corrupt $c \
+                --epochs 40 --datasets $datasets --lr 1 --corrupt $c \
                 --params_start 0 --params_end 81 --batch-size 128 \
                 --n_components $n --arch=$model \
                 --save-dir=logs/save_labelnoise${c}_${model} |& tee -a logs/log_${method}.log
