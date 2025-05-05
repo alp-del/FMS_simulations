@@ -188,6 +188,7 @@ def main():
         model.load_state_dict(torch.load(os.path.join(args.save_dir,  str(i) +  '.pt')))
         W.append(get_model_param_vec(model))
     W = np.array(W)
+    W = W.astype(np.float64)
     W = W-W.mean(axis=0,keepdims=True)
     W = W/(np.linalg.norm(W,axis=1, keepdims=True))
     print ('W:', W.shape)
