@@ -31,7 +31,7 @@ def set_seed(seed=999):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-print ('CFMS')
+print ('AFMS')
 
 parser = argparse.ArgumentParser(description='P(+)-SGD in pytorch')
 parser.add_argument('--arch', '-a', metavar='ARCH', default='resnet32',
